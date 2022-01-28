@@ -77,7 +77,7 @@ ffplay /dev/video3
 ```
 ### Icon für KVM Videocapture
 create a new file in ~/.local/share/applications/kvm.desktop with the following
-
+```
 [Desktop Entry]
 Name=KVM
 Comment=Show KVM module in VLC
@@ -86,7 +86,7 @@ Exec=flatpak run org.videolan.VLC v4l2:///dev/video2:v4l2-standard= :live-cachin
 Terminal=false
 Type=Application
 Categories=Utility;
-
+```
 Log out and in again or run (for gnome /gtk based desktops)
 
 gtk-update-icon-cache
