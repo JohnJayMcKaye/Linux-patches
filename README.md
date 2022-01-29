@@ -17,6 +17,72 @@ sudo apt install papirus-icon-theme
 
 
 
+
+
+
+
+
+# Enable VA-API 
+
+## Firefox
+about:config 
+
+media.ffmpeg.vaapi.enabled set to 			true
+media.ffvpx.enabled set to 				false
+media.rdd-vpx.enabled set to 				false
+media.navigator.mediadatadecoder_vpx_enabled set to 	true
+
+
+install intel-gpu-tools
+sudo intel_gpu_top
+zum überprüfen
+
+install vainfo
+vainfo
+zeigt die Fähigkeiten der Grafikkarte an
+
+## OS 
+
+install mesa-va-drivers für NVIDIA und AMD
+
+install intel-media-va-driver für INTEL
+
+## Firefox Touch scrolling
+sudo nano /etc/security/pam_env.conf
+```
+MOZ_USE_XINPUT2 DEFAULT=1
+```
+set about:config to dom.w3c_touch_events.enabled=1 (default 2)
+
+
+
+
+
+
+## Surface Maus
+
+    Comment out the only non-commented line in file /lib/udev/rules.d/50-bluetooth-hci-auto-poweron.rules
+    
+    Uncomment lines [Policy] and AutoEnable=true (originaly there is =false, change it) in /etc/bluetooth/main.conf
+    
+Reboot
+    
+Search and pair your mouse. If cursor is not moving, try pairing again.
+
+
+
+
+
+## Virtualbox 
+```
+sudo gpasswd -a $USER vboxusers
+```
+
+
+
+
+
+
 # GPD WIN 3
 
 ## touchscreen
@@ -55,6 +121,10 @@ options snd-intel-dspcfg dsp_driver=1
 sudo su
 echo s2idle > /sys/power/mem_sleep
 ```
+
+
+
+
 # GPD Pocket 3
 
 ## Grub-Menü drehen und Standby
@@ -92,3 +162,58 @@ Log out and in again or run (for gnome /gtk based desktops)
 gtk-update-icon-cache
 
 ## 
+
+
+
+
+
+
+
+
+
+
+
+# Kcosit K72H
+
+sudo mkdir /lib/firmware/silead
+
+sudo cp firmware_00.fw /lib/firmware/silead/mssl1680.fw
+
+sudo apt-get install xserver-xorg-input-evdev xserver-xorg-core
+
+sudo nano /usr/share/X11/xorg.conf.d/10-evdev.conf 
+```
+Section "InputClass"
+        Identifier "evdev touchscreen catchall"
+        MatchIsTouchscreen "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "evdev"
+        Option "SwapXY" "0"
+EndSection
+```
+
+sudo nano /usr/share/X11/xorg.conf.d/99-calibration.conf
+```
+Section "InputClass"
+      Identifier "evdev touchscreen catchall"
+      MatchIsTouchscreen "on"
+      MatchDevicePath "/dev/input/event*"
+      Driver "evdev"
+      Option "InvertX" "1"
+      Option "InvertY" "1"
+      Option "Calibration" "15 875 15 1650"
+      Option "SwapAxes" "1"
+EndSection
+```
+Rechtscklick:
+Option "EmulateThirdButton" "1"
+Option "EmulateThirdButtonTimeout" "750"
+Option "EmulateThirdButtonThreshold" "30"
+
+wenn das UI zu groß ist:
+
+$ sudo xrandr --output DSI1 --scale 2x2
+
+
+
+
