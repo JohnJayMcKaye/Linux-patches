@@ -59,7 +59,7 @@ set about:config to dom.w3c_touch_events.enabled=1 (default 2)
 
 
 
-## Surface Maus
+## [Surface Maus](https://www.microsoft.com/de-de/d/surface-maus/8qbtdr3q4rpw?activetab=pivot%3aoverviewtab)
 
     Comment out the only non-commented line in file /lib/udev/rules.d/50-bluetooth-hci-auto-poweron.rules
     
@@ -83,7 +83,7 @@ sudo gpasswd -a $USER vboxusers
 
 
 
-# GPD WIN 3
+# [GPD WIN 3](https://www.gpd.hk/gpdwin3)
 
 ## touchscreen
 ```
@@ -125,7 +125,7 @@ echo s2idle > /sys/power/mem_sleep
 
 
 
-# GPD Pocket 3
+# [GPD Pocket 3](https://gpd.hk/gpdpocket3)
 
 ## Grub-Menü drehen und Standby
 nano /etc/default/grub
@@ -161,7 +161,48 @@ Log out and in again or run (for gnome /gtk based desktops)
 
 gtk-update-icon-cache
 
-## 
+## Pipewire
+
+Add ppa for latest build
+```
+sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream
+```
+Update
+```
+sudo apt update
+```
+Install components
+```
+sudo apt install gstreamer1.0-pipewire pipewire-media-session libspa-0.2-bluetooth libspa-0.2-jack pipewire pipewire-audio-client-libraries
+```
+If you get unmet dependencies, you can run:
+```
+sudo apt --fix-broken install
+```
+Then re-run
+```
+sudo apt install gstreamer1.0-pipewire pipewire-media-session libspa-0.2-bluetooth libspa-0.2-jack pipewire pipewire-audio-client-libraries
+```
+Reload new services
+```
+systemctl --user daemon-reload
+```
+Disable PulseAudio service
+```
+systemctl --user --now disable pulseaudio.service pulseaudio.socket
+```
+If you update from previous version of PopOS
+```
+systemctl --user mask pulseaudio
+```
+Enable Pipewire services
+```
+systemctl --user --now enable pipewire pipewire-pulse
+```
+Enable Pipewire media session
+```
+systemctl --user --now enable pipewire-media-session.service
+```
 
 
 
@@ -173,7 +214,7 @@ gtk-update-icon-cache
 
 
 
-# Kcosit K72H
+# [Kcosit K72H](https://www.kcosit.com/Rugged-Handheld-PDA-Win10-1D2D-Barcode-Scanner-4GB-RAM-64GB-ROM-p1563970.html)
 
 sudo mkdir /lib/firmware/silead
 
@@ -213,6 +254,7 @@ Option "EmulateThirdButtonThreshold" "30"
 wenn das UI zu groß ist:
 
 $ sudo xrandr --output DSI1 --scale 2x2
+
 
 
 
