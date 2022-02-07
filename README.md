@@ -4,6 +4,23 @@ Patches for devices: GPD WIN 3, GPD Pocket 3, Lenovo X1 YOGA
 # Allgemein
 ## Gnome Fractional Scaling
 
+## System Update
+```
+sudo apt update
+sudo apt upgrade
+sudo apt dist-upgrade
+sudo apt autoremove
+sudo apt autoclean
+sudo fwupdmgr get-devices
+sudo fwupdmgr get-updates
+sudo fwupdmgr update
+flatpak update
+```
+
+
+
+
+
 on Wayland
 ```
 gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
@@ -17,6 +34,10 @@ sudo apt install papirus-icon-theme
 
 
 
+# CODECS
+```
+sudo apt install -y ubuntu-restricted-extas ffmpeg libavcodec-extra libdvd-pkg; sudo dpkg-reconfigure libdvd-pkg
+```
 
 
 
@@ -204,6 +225,107 @@ Enable Pipewire media session
 systemctl --user --now enable pipewire-media-session.service
 ```
 
+### Sensor 
+
+sudo nano /etc/udev/hwdb.d/61-Pocket3-sensor-local.hwdb
+für PoP!_OS
+```
+sensor:modalias:*
+  ACCEL_MOUNT_MATRIX=0, -1, 0; -1, 0, 0; 1, 0, 0
+```
+für Fedora
+```
+sensor:modalias:*
+  ACCEL_MOUNT_MATRIX=-1, 0, 0; 0, 1, 0; 1, 0, 0
+```
+sudo systemd-hwdb update
+sudo udevadm trigger
+
+### Sound 
+sudo nano /etc/modprobe.d/alsa-Pocket3.conf
+```
+options snd-intel-dspcfg dsp_driver=1
+```
+
+
+### Xorg configs
+sudo nano /usr/share/X11/xorg.conf.d/00-CONFIG.config
+
+20-gpd-pocket3-intel.conf
+```
+Section "Device"
+  Identifier "Device0"
+  Driver     "intel"
+  Option     "TearFree"    "true"
+  Option     "DRI"         "3"
+EndSection
+```
+
+40-gpd-pocket3-monitor.conf
+```
+# GPD Pocket 3 (modesetting)
+Section "Monitor"
+  Identifier "DSI-1"
+  Option     "Rotate"  "right"
+EndSection
+
+# GPD Pocket 3 (xorg-video-intel)
+Section "Monitor"
+  Identifier "DSI1"
+  Option     "Rotate"  "right"
+EndSection
+```
+
+80-gpd-pocket3-trackpoint.conf
+```
+Section "InputClass"
+  Identifier     "GPD Pocket 3 touchpad"
+  MatchProduct   "HAILUCK CO.,LTD USB KEYBOARD Mouse"
+  MatchIsPointer "on"
+  Driver         "libinput"
+  Option         "AccelSpeed"      "1"
+  Option         "MiddleEmulation" "1"
+  Option         "ScrollButton"    "2"
+  Option         "ScrollMethod"    "button"
+EndSection
+```
+
+sudo nano /etc/udev/rules.d/99-Pocket3-touch.rules
+```
+ACTION=="add", KERNEL=="event[0-9]*", ATTRS{name}=="GXTP7380:00 27C6:0113", ENV{LIBINPUT_CALIBRATION_MATRIX}="1 0 0 0 1 0 0 0 1"
+ACTION=="add", KERNEL=="event[0-9]*", ATTRS{name}=="GXTP7380:00 27C6:0113 Stylus Pen (0)", ENV{LIBINPUT_CALIBRATION_MATRIX}="0 1 0 -1 0 1"
+ACTION=="add", KERNEL=="event[0-9]*", ATTRS{name}=="GXTP7380:00 27C6:0113 Stylus Eraser (0)", ENV{LIBINPUT_CALIBRATION_MATRIX}="0 1 0 -1 0 1"
+```
+
+sudo nano /usr/share/glib-2.0/schemas/90-Pocket3.gschema.override
+```
+[org.ArcticaProject.arctica-greeter]
+enable-hidpi='on'
+```
+
+### Kernel config
+```
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} fbcon=rotate:1 video=DSI-1:panel_orientation=right_side_up mem_sleep_default=s2idle"
+GRUB_GFXMODE=1200x1920x32
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -254,6 +376,178 @@ Option "EmulateThirdButtonThreshold" "30"
 wenn das UI zu groß ist:
 
 $ sudo xrandr --output DSI1 --scale 2x2
+
+
+
+
+
+
+# JohnJayMcKaye`s Fedora Setup 
+
+Nachfolgend beschreibe ich mein optimales Fedora Setup.
+
+
+## Gerätename unter Einstellungen>Info ändern (Standard wert fedora)
+
+## Automatische Anmeldung nach Computerstart einrichten
+da die Festplatte ohnehin verschlüsselt ist, so du dein Passwort nicht 2 mal eingeben beim Computerstart und er ist dennoch sicher. 
+Einstellungen>Benutzer “Entsperren“ ”Automatische Anmeldung” aktivieren
+
+## [Gnome Plugins installieren](https://extensions.gnome.org/#)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_307_2.png) [Dash to Dock](https://extensions.gnome.org/extension/307/dash-to-dock/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_1070_KXz9hHX.png) [Syncthing Indicator](https://extensions.gnome.org/extension/1070/syncthing-indicator/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_750.png) [OpenWeather](https://extensions.gnome.org/extension/750/openweather/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_945_ysaMhAs.png) [CPU Power Manager](https://extensions.gnome.org/extension/945/cpu-power-manager/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_3737.png) [Hue Lights](https://extensions.gnome.org/extension/3737/hue-lights/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_906.png) [Sound Input & Output Device Chooser](https://extensions.gnome.org/extension/906/sound-output-device-chooser/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_517.png) [Caffeine](https://extensions.gnome.org/extension/517/caffeine/)
+[]!(https://extensions.gnome.org/extension-data/icons/icon_2890.png) [Tray Icons: Reloaded](https://extensions.gnome.org/extension/2890/tray-icons-reloaded/)
+[]!() []()
+
+
+### TLP
+git clone https://github.com/d4nj1/TLPUI.git
+cd TLPUI
+python3 -m tlpui
+
+
+## Programme
+
+Flathup-Repo hinzufügen
+´´´
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+´´´
+
+[Appimagelauncher](https://github.com/TheAssassin/AppImageLauncher/releases).rpm
+
+
+Syncthing
+´´´
+sudo dnf install syncthing
+´´´
+
+Hugo
+´´´
+sudo dnf install hugo
+´´´
+
+Papierus-Icon-Theme
+´´´
+sudo dnf install papirus-icon-theme
+´´´
+
+HTTrack Website Copier
+´´´
+sudo dnf install httrack
+´´´
+
+### Software aus dem Software Appstore
+0 A.D.
+AppImage Pool
+Audacity
+AusweisApp2
+Banking
+Blender
+Cool Retro Term
+Cozy
+darktable
+Decoder
+EasyTAG
+Element
+Erweiterungs Manager
+Geary
+Getting Things GNOME!
+GNOME Netzwerkbildschirme
+GNOME-Optimierung
+GNU Image Manipulation Program
+Handbrake
+gPodder
+gThumb Bildbetrachter
+Inkscape
+JDownloader
+Joplin
+Kdenlive
+KeePassXC
+Krita
+Logseq
+Lutris
+Marble
+Meteo
+nuclear music player
+OBS Studio
+RawTherapee
+ScummVM
+Skype
+Steam
+Telegram Desktop
+Tipp10
+Vintage Story
+VLC
+Xournal++
+ 	-unvollständig/Appimages-
+ 	
+### Appimages
+[Jaxx Liberty for Desktop](https://www.jaxx.io/downloads)
+[linphone](https://www.linphone.org/)
+[QMapShack](https://github.com/Maproom/qmapshack/releases)
+[mediathekview](https://mediathekview.de/download/) oder als [.rpm](https://mediathekview.de/download/)
+ 	
+
+
+
+
+
+
+
+
+
+## [VirtualBox 6 auf Fedora Installieren](https://computingforgeeks.com/how-to-install-virtualbox-on-fedora-linux/)
+
+Erstmal Fedora auf aktuellen Stand bringen, also Updaten und einmal neustarten.
+´´´
+sudo dnf -y upgrade
+sudo reboot
+´´´
+
+Abhängigkeiten Installieren
+´´´
+sudo dnf -y install @development-tools
+sudo dnf -y install kernel-headers kernel-devel dkms elfutils-libelf-devel qt5-qtx11extras
+´´´
+
+VirtualBox Repository zu Fedora hinzufügen 
+´´´
+cat <<EOF | sudo tee /etc/yum.repos.d/virtualbox.repo 
+[virtualbox]
+name=Fedora $releasever - $basearch - VirtualBox
+baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/35/\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc
+EOF
+´´´
+Import VirtualBox GPG Key (abfrage ggf. mit j bestätigen)
+´´´
+sudo dnf search virtualbox
+´´´
+VirtualBox nun endlich installieren
+´´´
+sudo dnf install VirtualBox-6.1
+´´´
+VirtualBox-Benutzer zum System hinzufügen sonst funktionieren einige Dinge nicht, z.B. USB durchreichung.
+´´´
+sudo usermod -a -G vboxusers $USER
+´´´
+[VirtualBox 6.1.32 Oracle VM VirtualBox Extension Pack](https://download.virtualbox.org/virtualbox/6.1.32/Oracle_VM_VirtualBox_Extension_Pack-6.1.32.vbox-extpack) herunterladen und installieren. (doppelklicken)
+
+
+
+
+
+
+
+
 
 
 
